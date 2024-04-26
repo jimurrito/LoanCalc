@@ -16,6 +16,20 @@ function New-SWFRadialButton {
     return $RADIAL
 }
 
+function New-SWFGroupBox {
+    param (
+        $Text = "Insert-Name",
+        $LocationX = 0,
+        $LocationY = 0,
+        $Location = (New-Object System.Drawing.Point($LocationX, $LocationY)),
+        $AutoScale = $true
+    )
+    $BOX = New-Object System.Windows.Forms.GroupBox
+    $BOX.Text = $Text
+    $BOX.Location = $Location
+    $BOX.AutoSize = $AutoScale
+    return $BOX
+}
 
 
 # Load necessary .NET assembly
@@ -30,30 +44,55 @@ $form.AutoSize = $true
 $form.MaximizeBox = $false
 $form.TopMost = $true
 
-
-# Create ButtonGroup
-$SelectTypeBG = New-Object System.Windows.Forms.GroupBox
-$SelectTypeBG.Text = "Find:"
-$SelectTypeBG.Location = New-Object System.Drawing.Point(10, 0)
-$SelectTypeBG.AutoSize = $true
+# Create Groupbox
+$SelectTypeGB = New-SWFGroupBox -Text "Find:" -LocationX 10
+$MonthlyPayGB = New-SWFGroupBox -Text "MPInput:" -LocationX 10 -LocationY 105
+$TotalPayGB = New-SWFGroupBox -Text "TPInput:" -LocationX 10 -LocationY 100
+$NumoPayGB = New-SWFGroupBox -Text "NPInput:" -LocationX 10 -LocationY 100
 
 
 # Create buttons
 $MonthlyPayRADIAL = New-SWFRadialButton -Text "Monthly Payment" -LocationX 10 -LocationY 20
-$TotalPayRADIAL = New-SWFRadialButton -Text "Total Payment" -LocationX 140 -LocationY 20
-$NumoPayRADIAL = New-SWFRadialButton -Text "Number of Payments" -LocationX 10 -LocationY 45
-
-$MonthlyPayRADIAL.add_CheckedChanged({
-    if ($MonthlyPayRADIAL.checked) {Write-Host "checked!"}
+$MonthlyPayRADIAL.Checked = $true   # defaults to this toggle
+$MonthlyPayRADIAL.add_CheckedChanged({ # Ran when the radial button changes states
+    if ($MonthlyPayRADIAL.checked) {
+        $form.Controls.Add($MonthlyPayGB)
+        $form.Controls.Remove($TotalPayGB)
+        $form.Controls.Remove($NumoPayGB)
+    }
 })
 
-# Add buttons to button group
-$SelectTypeBG.Controls.Add($MonthlyPayRADIAL)
-$SelectTypeBG.Controls.Add($TotalPayRADIAL)
-$SelectTypeBG.Controls.Add($NumoPayRADIAL)
+$TotalPayRADIAL = New-SWFRadialButton -Text "Total Payment" -LocationX 140 -LocationY 20
+$TotalPayRADIAL.add_CheckedChanged({ # Ran when the radial button changes states
+    if ($TotalPayRADIAL.checked) {
+        $form.Controls.Add($TotalPayGB)
+        $form.Controls.Remove($MonthlyPayGB)
+        $form.Controls.Remove($NumoPayGB)
+    }
+})
+
+$NumoPayRADIAL = New-SWFRadialButton -Text "Number of Payments" -LocationX 10 -LocationY 45
+$NumoPayRADIAL.add_CheckedChanged({ # Ran when the radial button changes states
+    if ($NumoPayRADIAL.checked) {
+        $form.Controls.Add($NumoPayGB)
+        $form.Controls.Remove($TotalPayGB)
+        $form.Controls.Remove($MonthlyPayGB)
+    }
+})
+
+$SelectTypeGB.Controls.Add($MonthlyPayRADIAL)
+$SelectTypeGB.Controls.Add($TotalPayRADIAL)
+$SelectTypeGB.Controls.Add($NumoPayRADIAL)
+
 
 # Add the buttongroup to the form
-$form.Controls.Add($SelectTypeBG)
+$form.Controls.Add($SelectTypeGB)
+
+
+# Preload
+if ($MonthlyPayRADIAL.checked) {
+    $form.Controls.Add($MonthlyPayGB)
+}
 
 # Show the form
 $form.ShowDialog()
