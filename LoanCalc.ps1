@@ -161,13 +161,33 @@ $form.Controls.Add($SelectBox)
 # radial buttons
 $MonthlyPayRADIAL = New-SWFRadialButton -Text "Monthly Payment" -LocationX $OBJBUFFERX -LocationY 20
 $SelectBox.Controls.Add($MonthlyPayRADIAL)
+$MonthlyPayRADIAL.add_checkedchanged(
+    {
+        $TotalAmountInput.Enabled = $true
+        $NumoPayInput.Enabled = $true
+        $PayAmountInput.Enabled = $false
+    }
+)
 #
 $TotalPayRADIAL = New-SWFRadialButton -Text "Total Payment" -LocationX (Get-SWFBufferLocation -Target $MonthlyPayRADIAL -Buffer 10) -LocationY 20
 $SelectBox.Controls.Add($TotalPayRADIAL)
+$TotalPayRADIAL.add_checkedchanged(
+    {
+        $TotalAmountInput.Enabled = $false
+        $NumoPayInput.Enabled = $true
+        $PayAmountInput.Enabled = $true
+    }
+)
 #
 $NumoPayRADIAL = New-SWFRadialButton -Text "Number of Payments" -LocationX $OBJBUFFERX -LocationY (Get-SWFBufferLocation -Side "bottom" -Target $MonthlyPayRADIAL -Buffer 5)
 $SelectBox.Controls.Add($NumoPayRADIAL)
-
+$NumoPayRADIAL.add_checkedchanged(
+    {
+        $TotalAmountInput.Enabled = $true
+        $NumoPayInput.Enabled = $false
+        $PayAmountInput.Enabled = $true
+    }
+)
 
 #
 # <Calc button>
@@ -202,10 +222,6 @@ $CalcButton.add_click({
             # Create Output label
             $OutValue = New-SWFLabel -Text ('$' + $Out)
             $OutBox.Controls.add($OutValue)
-            # Update and project object
-            $OutBox.size = New-Object System.Drawing.Size(($OutValue.size.Width + ($OBJBUFFERX * 9)), ($OutValue.size.Height + ($OBJBUFFERX)))
-            $OutBox.Location = New-Object System.Drawing.Point((($form.Size.Width / 2) - ($OutBox.Size.Width / 1.7)), (Get-SWFBufferLocation -Side "bottom" -Target $CalcButton -Buffer 20))
-            $OutValue.Location = New-Object System.Drawing.Point((($Outbox.Size.Width / 2) - ($OutValue.Size.Width / 1.7)), ($OBJBUFFERX * 2.25))
         }
         elseif ($TotalPayRADIAL.Checked) {
             # get TotalAmpunt amoritzation
@@ -216,25 +232,21 @@ $CalcButton.add_click({
             # Create Output label
             $OutValue = New-SWFLabel -Text ('$' + $Out)
             $OutBox.Controls.add($OutValue)
-            # Update and project object
-            $OutBox.size = New-Object System.Drawing.Size(($OutValue.size.Width + ($OBJBUFFERX * 9)), ($OutValue.size.Height + ($OBJBUFFERX)))
-            $OutBox.Location = New-Object System.Drawing.Point((($form.Size.Width / 2) - ($OutBox.Size.Width / 1.7)), (Get-SWFBufferLocation -Side "bottom" -Target $CalcButton -Buffer 20))
-            $OutValue.Location = New-Object System.Drawing.Point((($Outbox.Size.Width / 2) - ($OutValue.Size.Width / 1.7)), ($OBJBUFFERX * 2.25))
         }
         elseif ($NumoPayRADIAL.Checked) {
             # get number of payments amoritzation
-            $Out = [Math]::Round(( - ([Math]::Log((1 - (($MonthlyInterest * $TotalAmount) / $MonthlyPayment))) / [Math]::Log(1 + $MonthlyInterest))),1)
+            $Out = [Math]::Round(( - ([Math]::Log((1 - (($MonthlyInterest * $TotalAmount) / $MonthlyPayment))) / [Math]::Log(1 + $MonthlyInterest))), 1)
             # Create Output box
             $OutBox = New-SWFGroupBox -Text "# of payments:"
             $form.Controls.add($OutBox)
             # Create Output label
             $OutValue = New-SWFLabel -Text $Out
             $OutBox.Controls.add($OutValue)
-            # Update and project object
-            $OutBox.size = New-Object System.Drawing.Size(($OutValue.size.Width + ($OBJBUFFERX * 9)), ($OutValue.size.Height + ($OBJBUFFERX)))
-            $OutBox.Location = New-Object System.Drawing.Point((($form.Size.Width / 2) - ($OutBox.Size.Width / 1.7)), (Get-SWFBufferLocation -Side "bottom" -Target $CalcButton -Buffer 20))
-            $OutValue.Location = New-Object System.Drawing.Point((($Outbox.Size.Width / 2) - ($OutValue.Size.Width / 1.7)), ($OBJBUFFERX * 2.25))
         }
+        # Update and project Output
+        $OutBox.size = New-Object System.Drawing.Size(($OutValue.size.Width + ($OBJBUFFERX * 9)), ($OutValue.size.Height + ($OBJBUFFERX)))
+        $OutBox.Location = New-Object System.Drawing.Point((($form.Size.Width / 2) - ($OutBox.Size.Width / 1.7)), (Get-SWFBufferLocation -Side "bottom" -Target $CalcButton -Buffer 20))
+        $OutValue.Location = New-Object System.Drawing.Point((($Outbox.Size.Width / 2) - ($OutValue.Size.Width / 1.7)), ($OBJBUFFERX * 2.25))
     })
 
 
