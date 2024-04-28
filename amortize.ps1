@@ -8,7 +8,7 @@ function Get-MonthlyPayment {
         $Total,
         $NumPays
     )
-    ($MonthInt * $Total) / (1 - [Math]::Pow((1 + $MonthInt), - $NumPays))    
+    (($MonthInt * $Total) / (1 - ([Math]::Pow((1 + $MonthInt), - $NumPays))))    
 }
 
 
@@ -40,10 +40,10 @@ function Get-NumoPayment {
 
 
 
-$MonthlyPayment = Get-MonthlyPayment -APR 0.01 -Total 500 -NumPays 10
+$MonthlyPayment = Get-MonthlyPayment -APR 0.01 -Total 1000 -NumPays 72
 $MonthlyPayment
-Get-TotalPayment -APR 0.01 -MonthPayment $MonthlyPayment -NumPays 10
-Get-NumoPayment -APR 0.01 -MonthPayment $MonthlyPayment -Total 500
+Get-TotalPayment -APR 0.01 -MonthPayment $MonthlyPayment -NumPays 72
+Get-NumoPayment -APR 0.01 -MonthPayment $MonthlyPayment -Total 100
 
 
 
