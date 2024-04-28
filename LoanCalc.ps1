@@ -109,7 +109,7 @@ function Get-SWFBufferLocation {
 
 #
 # CONSTANTS
-$WINDOWW = 270
+$WINDOWW = 280
 $WINDOWH = 440
 $OBJBUFFERX = 10
 
@@ -126,6 +126,9 @@ $form.StartPosition = "CenterScreen"
 $form.AutoSize = $true
 $form.MaximizeBox = $false
 $form.TopMost = $true
+$form.Icon = New-Object System.Drawing.Icon("./favicon.ico")
+# (left, top, right, bottom)
+$form.padding = New-Object System.Windows.Forms.Padding(0,0,0,15)
 
 
 #
@@ -136,11 +139,11 @@ $TitleLabel = New-SWFLabel -Text "Loan Amoritization Calculator - by Jimurrito" 
 #
 # <Input Area>
 # Input for total loan amount
-$TotalAmountGroupBox = New-SWFGroupBox -Text "Total Amount ($):" -LocationX $OBJBUFFERX -LocationY (Get-SWFBufferLocation -Side "bottom" -Target $TitleLabel)
+$TotalAmountGroupBox = New-SWFGroupBox -Text "Total ($):" -LocationX $OBJBUFFERX -LocationY (Get-SWFBufferLocation -Side "bottom" -Target $TitleLabel)
 $form.Controls.Add($TotalAmountGroupBox)
 $TotalAmountInput = New-SWFTextbox -Text 1000 -LocationX ($OBJBUFFERX / 2) -LocationY 20; $TotalAmountGroupBox.Controls.Add($TotalAmountInput)
 # Number of payments/months
-$NumoPayGroupBox = New-SWFGroupBox -Text "# of payments:" -LocationX (Get-SWFBufferLocation -Target $TotalAmountGroupBox) -LocationY  (Get-SWFBufferLocation -Side "bottom" -Target $TitleLabel)
+$NumoPayGroupBox = New-SWFGroupBox -Text "# of payments:" -LocationX (Get-SWFBufferLocation -Target $TotalAmountGroupBox -Buffer 20) -LocationY  (Get-SWFBufferLocation -Side "bottom" -Target $TitleLabel)
 $form.Controls.Add($NumoPayGroupBox)
 $NumoPayInput = New-SWFTextbox -Text 72 -LocationX ($OBJBUFFERX / 2) -LocationY 20; $NumoPayGroupBox.Controls.Add($NumoPayInput)
 # APR
@@ -148,7 +151,7 @@ $APRGroupBox = New-SWFGroupBox -Text "APR (%):" -LocationX 10  -LocationY (Get-S
 $form.Controls.Add($APRGroupBox)
 $APRInput = New-SWFTextbox -Text 1.0 -LocationX ($OBJBUFFERX / 2) -LocationY 20; $APRGroupBox.Controls.Add($APRInput)
 # Payment Amount
-$PayAmountGroupBox = New-SWFGroupBox -Text "Payment ($):" -LocationX (Get-SWFBufferLocation -Target $APRGroupBox)  -LocationY (Get-SWFBufferLocation -Side "bottom" -Target $NumoPayGroupBox)
+$PayAmountGroupBox = New-SWFGroupBox -Text "Payment ($):" -LocationX (Get-SWFBufferLocation -Target $APRGroupBox -Buffer 20)  -LocationY (Get-SWFBufferLocation -Side "bottom" -Target $NumoPayGroupBox)
 $form.Controls.Add($PayAmountGroupBox)
 $PayAmountInput = New-SWFTextbox -Text 100 -LocationX ($OBJBUFFERX / 2) -LocationY 20; $PayAmountGroupBox.Controls.Add($PayAmountInput)
 
@@ -158,6 +161,7 @@ $PayAmountInput = New-SWFTextbox -Text 100 -LocationX ($OBJBUFFERX / 2) -Locatio
 # Group Box
 $SelectBox = New-SWFGroupBox -Text "Find:" -LocationX $OBJBUFFERX -LocationY (Get-SWFBufferLocation -Side "bottom" -Target $APRGroupBox)
 $form.Controls.Add($SelectBox)
+$SelectBox.Size = New-Object System.Drawing.Size(($form.Size.Width - $OBJBUFFERX - 30),0)
 # radial buttons
 $MonthlyPayRADIAL = New-SWFRadialButton -Text "Monthly Payment" -LocationX $OBJBUFFERX -LocationY 20
 $SelectBox.Controls.Add($MonthlyPayRADIAL)
@@ -169,7 +173,7 @@ $MonthlyPayRADIAL.add_checkedchanged(
     }
 )
 #
-$TotalPayRADIAL = New-SWFRadialButton -Text "Total Payment" -LocationX (Get-SWFBufferLocation -Target $MonthlyPayRADIAL -Buffer 10) -LocationY 20
+$TotalPayRADIAL = New-SWFRadialButton -Text "Total Payment" -LocationX (Get-SWFBufferLocation -Target $MonthlyPayRADIAL -Buffer 5) -LocationY 20
 $SelectBox.Controls.Add($TotalPayRADIAL)
 $TotalPayRADIAL.add_checkedchanged(
     {
@@ -189,10 +193,24 @@ $NumoPayRADIAL.add_checkedchanged(
     }
 )
 
+
+#
+# <Toggle for schedule generator>
+# Group Box
+$SchedToggleBox = New-SWFGroupBox -Text "Generate Schedule:" -LocationX $OBJBUFFERX -LocationY (Get-SWFBufferLocation -Side "bottom" -Target $SelectBox)
+$form.Controls.Add($SchedToggleBox)
+$SchedToggleBox.Size = New-Object System.Drawing.Size(($form.Size.Width - $OBJBUFFERX - 30),0)
+# radial buttons
+$ONRADIAL = New-SWFRadialButton -Text "On" -LocationX $OBJBUFFERX -LocationY 20
+$SchedToggleBox.Controls.Add($ONRADIAL)
+$OFFRADIAL = New-SWFRadialButton -Text "Off" -LocationX (Get-SWFBufferLocation -Target $ONRADIAL) -LocationY 20
+$SchedToggleBox.Controls.Add($OFFRADIAL)
+
+
 #
 # <Calc button>
 $CalcButton = New-SWFButton -Text "Calculate"
-$CalcButton.Location = New-Object System.Drawing.Point((($form.Size.Width / 2) - ($CalcButton.Size.Width / 1.5)), (Get-SWFBufferLocation -Side "bottom" -Target $SelectBox))
+$CalcButton.Location = New-Object System.Drawing.Point((($form.Size.Width / 2) - ($CalcButton.Size.Width / 1.5)), (Get-SWFBufferLocation -Side "bottom" -Target $SchedToggleBox))
 $form.Controls.Add($CalcButton)
 
 
@@ -207,7 +225,7 @@ $CalcButton.add_click({
         [int]$MonthlyPayment = $PayAmountInput.Text
 
         # Clear result prior
-        if ($form.Controls.Count -gt 7) {
+        if ($form.Controls.Count -gt 8) {
             # Remove the last control
             $form.Controls.RemoveAt(($form.Controls.Count - 1))
         }
@@ -245,7 +263,7 @@ $CalcButton.add_click({
         }
         # Update and project Output
         $OutBox.size = New-Object System.Drawing.Size(($OutValue.size.Width + ($OBJBUFFERX * 9)), ($OutValue.size.Height + ($OBJBUFFERX)))
-        $OutBox.Location = New-Object System.Drawing.Point((($form.Size.Width / 2) - ($OutBox.Size.Width / 1.7)), (Get-SWFBufferLocation -Side "bottom" -Target $CalcButton -Buffer 20))
+        $OutBox.Location = New-Object System.Drawing.Point((($form.Size.Width / 2) - ($OutBox.Size.Width / 1.7)), (Get-SWFBufferLocation -Side "bottom" -Target $CalcButton -Buffer 15))
         $OutValue.Location = New-Object System.Drawing.Point((($Outbox.Size.Width / 2) - ($OutValue.Size.Width / 1.7)), ($OBJBUFFERX * 2.25))
     })
 
@@ -253,7 +271,7 @@ $CalcButton.add_click({
 #
 # <Pre-load>
 $MonthlyPayRADIAL.Checked = $true
-
+$OFFRADIAL.Checked = $true
 
 # Show the form
 $form.ShowDialog()
