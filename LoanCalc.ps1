@@ -128,10 +128,13 @@ $form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
 $form.StartPosition = "CenterScreen"
 $form.AutoSize = $true
 $form.MaximizeBox = $false
-$form.TopMost = $true
-$form.Icon = New-Object System.Drawing.Icon("./favicon.ico")
+#$form.TopMost = $true
+$form.Icon = New-Object System.Drawing.Icon("$PSScriptRoot/.assets/icon/favicon.ico")
 # (left, top, right, bottom)
 $form.padding = New-Object System.Windows.Forms.Padding(0, 0, 0, 15)
+# Enable high DPI
+$form.AutoScaleDimensions = '96, 96'
+$form.AutoScaleMode = [System.Windows.Forms.AutoScaleMode]::Dpi
 
 
 #

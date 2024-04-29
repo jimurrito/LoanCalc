@@ -9,6 +9,9 @@ param(
 # Load necessary .NET assembly
 Add-Type -AssemblyName System.Windows.Forms
 
+# Enables modern design from .net
+[System.Windows.Forms.Application]::EnableVisualStyles()
+
 # Create a new form
 $form = New-Object System.Windows.Forms.Form 
 $form.Text = "Amortization Schedule"
@@ -17,9 +20,9 @@ $form.Padding = New-Object System.Windows.Forms.Padding(15, 15, 15, 15)
 $form.StartPosition = "CenterScreen"
 $form.AutoSize = $true
 #$form.MaximizeBox = $false
-$form.TopMost = $true
-$form.Width = 720
-$form.Icon = New-Object System.Drawing.Icon("./favicon.ico")
+#$form.TopMost = $true
+$form.Width = 820
+$form.Icon = New-Object System.Drawing.Icon("$PSScriptRoot/.assets/icon/favicon.ico")
 
 # Create a new DataGridView
 $dataGridView = New-Object System.Windows.Forms.DataGridView
@@ -57,7 +60,7 @@ while ($true) {
     # Get new total
     $TotalAmountAdjusted = ($TotalAmount - $MonthlyPaymentAdjusted)
     # Catch for payment overflow. | if less than 0, adjusted payment is the orginal total
-    if ($TotalAmountAdjusted -lt 0) { $MonthlyPayment = $TotalAmount; $MonthlyPaymentAdjusted = $TotalAmount; $TotalAmountAdjusted = 0 }
+    if ($TotalAmountAdjusted -lt 0) { $MonthlyPayment = $TotalAmount; $MonthlyPaymentAdjusted = $TotalAmount; $TotalAmountAdjusted = 0; $InterestPayment = 0}
     # Create rows and add to dataTable
     $row = $dataTable.NewRow()
     $row["Payment #"] = $NumoPaymentsAdjusted
