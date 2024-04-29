@@ -128,7 +128,7 @@ $form.MaximizeBox = $false
 $form.TopMost = $true
 $form.Icon = New-Object System.Drawing.Icon("./favicon.ico")
 # (left, top, right, bottom)
-$form.padding = New-Object System.Windows.Forms.Padding(0,0,0,15)
+$form.padding = New-Object System.Windows.Forms.Padding(0, 0, 0, 15)
 
 
 #
@@ -161,7 +161,7 @@ $PayAmountInput = New-SWFTextbox -Text 100 -LocationX ($OBJBUFFERX / 2) -Locatio
 # Group Box
 $SelectBox = New-SWFGroupBox -Text "Find:" -LocationX $OBJBUFFERX -LocationY (Get-SWFBufferLocation -Side "bottom" -Target $APRGroupBox)
 $form.Controls.Add($SelectBox)
-$SelectBox.Size = New-Object System.Drawing.Size(($form.Size.Width - $OBJBUFFERX - 30),0)
+$SelectBox.Size = New-Object System.Drawing.Size(($form.Size.Width - $OBJBUFFERX - 30), 0)
 # radial buttons
 $MonthlyPayRADIAL = New-SWFRadialButton -Text "Monthly Payment" -LocationX $OBJBUFFERX -LocationY 20
 $SelectBox.Controls.Add($MonthlyPayRADIAL)
@@ -199,7 +199,7 @@ $NumoPayRADIAL.add_checkedchanged(
 # Group Box
 $SchedToggleBox = New-SWFGroupBox -Text "Generate Schedule:" -LocationX $OBJBUFFERX -LocationY (Get-SWFBufferLocation -Side "bottom" -Target $SelectBox)
 $form.Controls.Add($SchedToggleBox)
-$SchedToggleBox.Size = New-Object System.Drawing.Size(($form.Size.Width - $OBJBUFFERX - 30),0)
+$SchedToggleBox.Size = New-Object System.Drawing.Size(($form.Size.Width - $OBJBUFFERX - 30), 0)
 # radial buttons
 $ONRADIAL = New-SWFRadialButton -Text "On" -LocationX $OBJBUFFERX -LocationY 20
 $SchedToggleBox.Controls.Add($ONRADIAL)
@@ -262,7 +262,7 @@ $CalcButton.add_click({
             $OutBox.Controls.add($OutValue)
         }
         # Update and project Output
-        $OutBox.size = New-Object System.Drawing.Size(($OutValue.size.Width + ($OBJBUFFERX * 9)), ($OutValue.size.Height + ($OBJBUFFERX)))
+        $OutBox.size = New-Object System.Drawing.Size(120, ($OutValue.size.Height + ($OBJBUFFERX)))
         $OutBox.Location = New-Object System.Drawing.Point((($form.Size.Width / 2) - ($OutBox.Size.Width / 1.7)), (Get-SWFBufferLocation -Side "bottom" -Target $CalcButton -Buffer 15))
         $OutValue.Location = New-Object System.Drawing.Point((($Outbox.Size.Width / 2) - ($OutValue.Size.Width / 1.7)), ($OBJBUFFERX * 2.25))
     })
