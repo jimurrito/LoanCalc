@@ -133,7 +133,7 @@ $form.padding = New-Object System.Windows.Forms.Padding(0, 0, 0, 15)
 
 #
 # <Title>
-$TitleLabel = New-SWFLabel -Text "Loan Amoritization Calculator - by Jimurrito" -LocationX $OBJBUFFERX -LocationY 20; $form.Controls.Add($TitleLabel)
+$TitleLabel = New-SWFLabel -Text "Loan Amortization Calculator - by Jimurrito" -LocationX $OBJBUFFERX -LocationY 20; $form.Controls.Add($TitleLabel)
 
 
 #
@@ -218,11 +218,11 @@ $form.Controls.Add($CalcButton)
 # <Calc Function>
 $CalcButton.add_click({
         #
-        [int]$TotalAmount = $TotalAmountInput.Text
+        [float]$TotalAmount = $TotalAmountInput.Text
         [int]$NumoPayments = $NumoPayInput.Text
         $APR = ($APRInput.Text / 100)
         $MonthlyInterest = $APR / 12
-        [int]$MonthlyPayment = $PayAmountInput.Text
+        [float]$MonthlyPayment = $PayAmountInput.Text
 
         # Clear result prior
         if ($form.Controls.Count -gt 8) {
@@ -233,38 +233,43 @@ $CalcButton.add_click({
         # If calc monthly payment
         if ($MonthlyPayRADIAL.Checked) {
             # get payment amoritzation
-            $Out = [Math]::Round((($MonthlyInterest * $TotalAmount) / (1 - ([Math]::Pow((1 + $MonthlyInterest), - $NumoPayments)))), 2)
+            $MonthlyPayment = [Math]::Round(($MonthlyInterest * $TotalAmount) / (1 - ([Math]::Pow((1 + $MonthlyInterest), - $NumoPayments))), 2)
             # Create Output box
             $OutBox = New-SWFGroupBox -Text "Monthly Payment:"
             $form.Controls.add($OutBox)
             # Create Output label
-            $OutValue = New-SWFLabel -Text ('$' + $Out)
+            $OutValue = New-SWFLabel -Text ('$' + $MonthlyPayment)
             $OutBox.Controls.add($OutValue)
         }
         elseif ($TotalPayRADIAL.Checked) {
             # get TotalAmpunt amoritzation
-            $Out = [Math]::Round((($MonthlyPayment * (1 - [Math]::Pow((1 + $MonthlyInterest), - $NumoPayments))) / $MonthlyInterest), 2)
+            $TotalAmount = [Math]::Round((($MonthlyPayment * (1 - [Math]::Pow((1 + $MonthlyInterest), - $NumoPayments))) / $MonthlyInterest), 2)
             # Create Output box
             $OutBox = New-SWFGroupBox -Text "Total Amount:"
             $form.Controls.add($OutBox)
             # Create Output label
-            $OutValue = New-SWFLabel -Text ('$' + $Out)
+            $OutValue = New-SWFLabel -Text ('$' + $TotalAmount)
             $OutBox.Controls.add($OutValue)
         }
         elseif ($NumoPayRADIAL.Checked) {
-            # get number of payments amoritzation
-            $Out = [Math]::Round(( - ([Math]::Log((1 - (($MonthlyInterest * $TotalAmount) / $MonthlyPayment))) / [Math]::Log(1 + $MonthlyInterest))), 1)
+            # get number of payments amoritzation (Ceiling rounds up)
+            $NumoPayments = [Math]::Ceiling(( - ([Math]::Log((1 - (($MonthlyInterest * $TotalAmount) / $MonthlyPayment))) / [Math]::Log(1 + $MonthlyInterest))))
             # Create Output box
             $OutBox = New-SWFGroupBox -Text "# of payments:"
             $form.Controls.add($OutBox)
             # Create Output label
-            $OutValue = New-SWFLabel -Text $Out
+            $OutValue = New-SWFLabel -Text $NumoPayments
             $OutBox.Controls.add($OutValue)
         }
         # Update and project Output
         $OutBox.size = New-Object System.Drawing.Size(120, ($OutValue.size.Height + ($OBJBUFFERX)))
         $OutBox.Location = New-Object System.Drawing.Point((($form.Size.Width / 2) - ($OutBox.Size.Width / 1.7)), (Get-SWFBufferLocation -Side "bottom" -Target $CalcButton -Buffer 15))
         $OutValue.Location = New-Object System.Drawing.Point((($Outbox.Size.Width / 2) - ($OutValue.Size.Width / 1.7)), ($OBJBUFFERX * 2.25))
+        #
+        # If Generate schedule is toggled, do the thing
+        if ($ONRADIAL.Checked) {
+            ./LoanCalc_sched.ps1 -TotalAmount $TotalAmount -NumoPayments $NumoPayments -MonthlyInterest $MonthlyInterest -MonthlyPayment $MonthlyPayment
+        }
     })
 
 
@@ -274,4 +279,4 @@ $MonthlyPayRADIAL.Checked = $true
 $OFFRADIAL.Checked = $true
 
 # Show the form
-$form.ShowDialog()
+$Null = $form.ShowDialog()
