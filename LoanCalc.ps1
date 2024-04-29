@@ -117,6 +117,9 @@ $OBJBUFFERX = 10
 # Load necessary .NET assembly
 Add-Type -AssemblyName System.Windows.Forms
 
+# Enables modern design from .net
+[System.Windows.Forms.Application]::EnableVisualStyles()
+
 # Create a new form
 $form = New-Object System.Windows.Forms.Form 
 $form.Text = "LoanCalc"
