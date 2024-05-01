@@ -1,6 +1,6 @@
-<h1><img src=".assets/icon/favicon.png" width="75" height="75"> LoanCalc</h1>
+<h1><img src=".assets/icon/favicon.png" width="75" height="75"> LoanCalc  (Powershell)</h1>
 
-Loan Amortization tool built in Powershell and C#. Uses the `System.Windows.Forms` classes built into C#.
+Loan Amortization tool built in Powershell. Uses the `System.Windows.Forms` classes built into C#.
 
 > **Note:** This script only supports Windows OS, even though it supports Powershell Core.
 
