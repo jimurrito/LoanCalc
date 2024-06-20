@@ -129,7 +129,7 @@ $form.StartPosition = "CenterScreen"
 $form.AutoSize = $true
 $form.MaximizeBox = $false
 #$form.TopMost = $true
-$form.Icon = New-Object System.Drawing.Icon("$PSScriptRoot/.assets/icon/favicon.ico")
+$form.Icon = New-Object System.Drawing.Icon("$PSScriptRoot/../.assets/icon/favicon.ico")
 # (left, top, right, bottom)
 $form.padding = New-Object System.Windows.Forms.Padding(0, 0, 0, 15)
 # Enable high DPI
@@ -274,7 +274,7 @@ $CalcButton.add_click({
         #
         # If Generate schedule is toggled, do the thing
         if ($ONRADIAL.Checked) {
-            ./LoanCalc_sched.ps1 -TotalAmount $TotalAmount -NumoPayments $NumoPayments -MonthlyInterest $MonthlyInterest -MonthlyPayment $MonthlyPayment
+           powershell "$PSScriptRoot/LoanCalc_sched.ps1" -TotalAmount $TotalAmount -NumoPayments $NumoPayments -MonthlyInterest $MonthlyInterest -MonthlyPayment $MonthlyPayment
         }
     })
 
